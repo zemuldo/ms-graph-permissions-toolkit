@@ -1,15 +1,12 @@
 defmodule Tractor do
   def read_files(scheme) do
     {:ok, apis} = File.ls("../docs/microsoft-graph-docs-main/api-reference/#{scheme}/api")
-    IO.inspect(Enum.count(apis))
 
     apis
-    |> Enum.reduce([], fn endpoint, acc ->
-      case String.ends_with?(endpoint, ".md") do
-        true -> acc ++ [get_endpoint(scheme, endpoint)]
-        false -> acc
-      end
-    end)
+    |> Flow.from_enumerable()
+    |> Flow.reject(&(not String.ends_with?(&1, ".md")))
+    |> Flow.map(&(get_endpoint(scheme, &1)))
+    |> Enum.sort()
   end
 
   def get_endpoint("v1.0", endpoint) do
@@ -18,7 +15,7 @@ defmodule Tractor do
   end
 
   def get_endpoint("beta", endpoint) do
-    ("../docs/microsoft-graph-docs-main/api-reference/v1.0/api/" <> endpoint)
+    ("../docs/microsoft-graph-docs-main/api-reference/beta/api/" <> endpoint)
     |> read_file
   end
 
@@ -58,7 +55,10 @@ defmodule Tractor do
 
       %{permissions: permissions, endpoints: endpoints}
     else
-      _ -> {:error, "Failed to read file"}
+
+      error ->
+         IO.inspect(error, label: path)
+        {:error, "Failed to read file"}
     end
   end
 
