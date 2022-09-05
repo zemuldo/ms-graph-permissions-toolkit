@@ -1,6 +1,7 @@
 defmodule Tractor do
   alias Tractor.DistortedTable
   alias Tracktor.PermissionName
+  alias Tracktor.DetectTable
 
   def list_permissions(scheme \\ "v1.0") do
     scheme
@@ -80,7 +81,7 @@ defmodule Tractor do
         |> Enum.take(25)
         |> Enum.filter(fn item ->
           case item do
-            {"table", _, data, _} -> is_permissions_table(data)
+            {"table", _, data, _} -> DetectTable.is_permissions_table(data)
             _ -> false
           end
         end)
@@ -282,72 +283,5 @@ defmodule Tractor do
   defp format_link(" (" <> string), do: string |> String.trim() |> String.replace(")", "")
   defp format_link(string), do: string |> String.trim() |> String.replace(")", "")
 
-  def is_permissions_table(
-        [
-          {"thead", [],
-           [
-             {"tr", [],
-              [
-                {"th", _style1, _, _1},
-                {"th", _style2, delegated_ws, _3},
-                {"th", _style2, delegated_msa, _3},
-                {"th", _style2, application, _3}
-              ], _4}
-           ], _5}
-          | _
-        ] = table
-      ) do
-    PermissionName.is_valid(delegated_ws) and PermissionName.is_valid(delegated_msa) and
-      PermissionName.is_valid(application)
-  end
 
-  def is_permissions_table(
-        [
-          {"thead", [],
-           [
-             {"tr", [],
-              [
-                {"th", _style1, ["Permission type"], _1} | _
-              ], _4}
-           ], _5}
-          | _
-        ] = table
-      ) do
-    true
-  end
-
-  def is_permissions_table(
-        [
-          {"thead", [],
-           [
-             {"tr", [],
-              [
-                {"th", _style1, ["Permission Type"], _1},
-                {"th", _style2, _2, _3}
-              ], _4}
-           ], _5}
-          | _
-        ] = table
-      ) do
-    true
-  end
-
-  def is_permissions_table(
-        [
-          {"thead", [],
-           [
-             {"tr", [],
-              [
-                {"th", _style1, ["Supported resource"], _1} | _
-              ], _4}
-           ], _5}
-          | _
-        ] = table
-      ) do
-    true
-  end
-
-  def is_permissions_table(table) do
-    false
-  end
 end
