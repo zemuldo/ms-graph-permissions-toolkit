@@ -2,6 +2,7 @@ defmodule Tractor do
   alias Tractor.DistortedTable
   alias Tracktor.PermissionName
   alias Tracktor.DetectTable
+  alias Tracktor.TextExtractor
 
   def list_permissions(scheme \\ "v1.0") do
     scheme
@@ -177,12 +178,16 @@ defmodule Tractor do
          ], _}
       ) do
     %{
-      resource: resource |> extract_text(),
-      permission_type: permission_type |> extract_text(),
+      resource: resource |> TextExtractor.extract_text(),
+      permission_type: permission_type |> TextExtractor.extract_text(),
       permissions:
-        permissions |> Enum.map(&extract_text/1) |> Enum.join("") |> String.split(",", trim: true)
+        permissions
+        |> Enum.map(&TextExtractor.extract_text/1)
+        |> Enum.join("")
+        |> String.split(",", trim: true)
     }
   end
+
   def get_permissions(
         resource,
         {"tr", [],
@@ -192,22 +197,24 @@ defmodule Tractor do
            {"td", _style2, permissions_on_others, _}
          ], _}
       ) do
-    [%{
-        permission_type: extract_text(permission_type),
+    [
+      %{
+        permission_type: TextExtractor.extract_text(permission_type),
         permissions_on_self:
           permissions_on_self
-          |> Enum.map(&extract_text/1)
+          |> Enum.map(&TextExtractor.extract_text/1)
           |> Enum.join("")
           |> String.split(",", trim: true)
       },
       %{
-        permission_type: extract_text(permission_type),
+        permission_type: TextExtractor.extract_text(permission_type),
         permissions_on_others:
           permissions_on_others
-          |> Enum.map(&extract_text/1)
+          |> Enum.map(&TextExtractor.extract_text/1)
           |> Enum.join("")
           |> String.split(",", trim: true)
-      }]
+      }
+    ]
   end
 
   def get_permissions(
@@ -222,29 +229,29 @@ defmodule Tractor do
       ) do
     [
       %{
-        resource: extract_text(resource),
+        resource: TextExtractor.extract_text(resource),
         permission_type: "Delegated (work or school account)",
         permissions:
           delegated_ws
-          |> Enum.map(&extract_text/1)
+          |> Enum.map(&TextExtractor.extract_text/1)
           |> Enum.join("")
           |> String.split(",", trim: true)
       },
       %{
-        resource: extract_text(resource),
+        resource: TextExtractor.extract_text(resource),
         permission_type: "Delegated (personal Microsoft account)",
         permissions:
           delegated_msa
-          |> Enum.map(&extract_text/1)
+          |> Enum.map(&TextExtractor.extract_text/1)
           |> Enum.join("")
           |> String.split(",", trim: true)
       },
       %{
-        resource: extract_text(resource),
+        resource: TextExtractor.extract_text(resource),
         permission_type: "Application",
         permissions:
           application
-          |> Enum.map(&extract_text/1)
+          |> Enum.map(&TextExtractor.extract_text/1)
           |> Enum.join("")
           |> String.split(",", trim: true)
       }
@@ -252,36 +259,4 @@ defmodule Tractor do
   end
 
   def get_permissions(_, _), do: []
-
-  def extract_text([text]) when is_binary(text), do: text
-  def extract_text(text) when is_binary(text), do: text
-  def extract_text({"td", _style, [text], %{}}) when is_binary(text), do: text
-
-  def extract_text(
-        {"td", _style,
-         [
-           {"a", [{"href", resource_doc}], [resource], %{}},
-           _link
-         ], %{}}
-      ),
-      do: resource <> ">>" <> resource_doc
-
-  def extract_text([
-        {"a", [{"href", resource_doc}], [resource], %{}},
-        link
-      ]),
-      do: resource <> ">>" <> resource_doc <> ">>" <> format_link(link)
-
-  def extract_text([
-        {"a", [{"href", resource_doc}], [resource], %{}}
-      ]),
-      do: resource <> ">>" <> resource_doc
-
-  def extract_text({"td", _style, [text], %{}}) when is_binary(text), do: text
-  def extract_text(_), do: ""
-
-  defp format_link(" (" <> string), do: string |> String.trim() |> String.replace(")", "")
-  defp format_link(string), do: string |> String.trim() |> String.replace(")", "")
-
-
 end
