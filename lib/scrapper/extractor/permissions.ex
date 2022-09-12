@@ -1,7 +1,7 @@
 defmodule Scrapper.ExTractor.Permissions do
 
   alias Scrapper.ExTractor.TextExTractor
-  
+
     def get_permissions(
         resource,
         {"tr", [],
@@ -13,7 +13,7 @@ defmodule Scrapper.ExTractor.Permissions do
     %{
       resource: resource |> TextExTractor.extract_text(),
       permission_type: permission_type |> TextExTractor.extract_text(),
-      permissions:
+      scopes:
         permissions
         |> Enum.map(&TextExTractor.extract_text/1)
         |> Enum.join("")
@@ -33,7 +33,7 @@ defmodule Scrapper.ExTractor.Permissions do
     [
       %{
         permission_type: TextExTractor.extract_text(permission_type),
-        permissions_on_self:
+        scopes_on_self:
           permissions_on_self
           |> Enum.map(&TextExTractor.extract_text/1)
           |> Enum.join("")
@@ -41,7 +41,7 @@ defmodule Scrapper.ExTractor.Permissions do
       },
       %{
         permission_type: TextExTractor.extract_text(permission_type),
-        permissions_on_others:
+        scopes_on_others:
           permissions_on_others
           |> Enum.map(&TextExTractor.extract_text/1)
           |> Enum.join("")
@@ -64,7 +64,7 @@ defmodule Scrapper.ExTractor.Permissions do
       %{
         resource: TextExTractor.extract_text(resource),
         permission_type: "Delegated (work or school account)",
-        permissions:
+        scopes:
           delegated_ws
           |> Enum.map(&TextExTractor.extract_text/1)
           |> Enum.join("")
@@ -73,7 +73,7 @@ defmodule Scrapper.ExTractor.Permissions do
       %{
         resource: TextExTractor.extract_text(resource),
         permission_type: "Delegated (personal Microsoft account)",
-        permissions:
+        scopes:
           delegated_msa
           |> Enum.map(&TextExTractor.extract_text/1)
           |> Enum.join("")
@@ -82,7 +82,7 @@ defmodule Scrapper.ExTractor.Permissions do
       %{
         resource: TextExTractor.extract_text(resource),
         permission_type: "Application",
-        permissions:
+        scopes:
           application
           |> Enum.map(&TextExTractor.extract_text/1)
           |> Enum.join("")

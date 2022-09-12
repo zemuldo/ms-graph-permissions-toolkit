@@ -25,12 +25,12 @@ defmodule Scrapper.ExTractor.DistortedTable do
     case text |> TextExTractor.extract_text() |> String.split("|") |> Enum.take(-6) do
       [_, delegated_ws, _, delegated_msa, _, application] ->
         [
-          %{permissions: delegated_ws, permission_type: "Delegated (work or school account)"},
+          %{scopes: delegated_ws, permission_type: "Delegated (work or school account)"},
           %{
-            permissions: delegated_msa,
+            scopes: delegated_msa,
             permission_type: "Delegated (personal Microsoft account)"
           },
-          %{permissions: application, permission_type: "Application"}
+          %{scopes: application, permission_type: "Application"}
         ]
 
       _ ->

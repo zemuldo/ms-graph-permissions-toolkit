@@ -2,6 +2,7 @@ defmodule Scrapper do
   alias Scrapper.ExTractor.DistortedTable
   alias Scrapper.ExTractor.DetectTable
   alias Scrapper.ExTractor.Permissions
+  alias Scrapper.Cleaner
 
   def list_permissions(scheme \\ "v1.0") do
     scheme
@@ -47,6 +48,21 @@ defmodule Scrapper do
     File.write("dump.json", Poison.encode!(data), [:binary])
   end
 
+  def to_db(data) do
+    data
+    |> Enum.map(fn item ->
+      try do
+        Poison.encode!(item)
+      rescue
+        _ ->
+          IO.inspect(item)
+          raise("Some itemns not well encoded")
+      end
+    end)
+
+    File.write("dump.json", Poison.encode!(data), [:binary])
+  end
+
   def run(scheme \\ "v1.0") do
     {:ok, apis} = File.ls("docs/microsoft-graph-docs-main/api-reference/#{scheme}/api")
 
@@ -73,6 +89,7 @@ defmodule Scrapper do
   end
 
   def read_file(path) do
+    IO.puts("==> Extracting #{path}")
     with {:ok, markdown} <-
            File.read(path),
          {:ok, ast, _} <- EarmarkParser.as_ast(markdown) do
@@ -132,6 +149,7 @@ defmodule Scrapper do
         endpoints: endpoints,
         doc: path
       }
+      |> Cleaner.clean_endpoint()
     else
       _ ->
         {:error, "Failed to read file"}
