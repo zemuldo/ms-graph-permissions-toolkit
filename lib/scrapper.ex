@@ -130,6 +130,11 @@ defmodule Scrapper do
                {"code", [{"class", "http"}], [endpoints], _}
              ], _} ->
               {:halt, endpoints |> String.split("\n", trim: true)}
+            {"pre", [],
+             [
+               {"code", [{"class", "msgraph-interactive"}], [endpoints], _}
+             ], _} ->
+              {:halt, endpoints |> String.split("\n", trim: true)}
 
             _ ->
               {:cont, []}
