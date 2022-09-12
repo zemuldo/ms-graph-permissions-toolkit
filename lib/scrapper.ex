@@ -38,7 +38,7 @@ defmodule Scrapper do
     data
     |> Enum.map(fn item ->
       try do
-        Poison.encode!(item)
+        Jason.encode!(item)
       rescue
         _ ->
           IO.inspect(item)
@@ -46,7 +46,7 @@ defmodule Scrapper do
       end
     end)
 
-    File.write("dump.json", Poison.encode!(data), [:binary])
+    File.write("dump.json", Jason.encode!(data), [:binary])
   end
 
   def to_db(data) do
