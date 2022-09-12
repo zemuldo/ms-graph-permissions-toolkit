@@ -57,7 +57,7 @@ defmodule Scrapper.Repo do
       ) do
     scopes
     |> Enum.with_index()
-    |> Enum.map(&create_for_scope(&1, permission, endpoint, doc, :scopes_on_self))
+    |> Enum.map(&create_for_scope(&1, permission, endpoint, doc, :scope_on_self))
   end
 
   def create_for_permission(
