@@ -3,19 +3,15 @@ defmodule Scrapper.Repo.Migrations.Initial do
 
   def change do
 
-    create table("permission_types") do
-      add :name, :string
-    end
-
     create table("permissions") do
-      add :name, :string
-      add :doc, :string
+      add :doc, :text
+      add :endpoint, :text
+      add :resource, :text
+      add :permission_type, :text
+      add :scope_on_all, :text
+      add :scope_on_others, :text
+      add :scope_on_self, :text
       add :privilege_weight, :integer
-    end
-
-    create table("endpoints") do
-      add :name, :string
-      add :permission_id, references(:permissions)
     end
   end
 end

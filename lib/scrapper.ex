@@ -3,6 +3,7 @@ defmodule Scrapper do
   alias Scrapper.ExTractor.DetectTable
   alias Scrapper.ExTractor.Permissions
   alias Scrapper.Cleaner
+  alias Scrapper.Repo
 
   def list_permissions(scheme \\ "v1.0") do
     scheme
@@ -52,15 +53,15 @@ defmodule Scrapper do
     data
     |> Enum.map(fn item ->
       try do
-        Poison.encode!(item)
+        Repo.create_for_doc(item)
       rescue
-        _ ->
+        e ->
+          IO.inspect(e)
           IO.inspect(item)
-          raise("Some itemns not well encoded")
+          raise("Failed to dump")
       end
     end)
-
-    File.write("dump.json", Poison.encode!(data), [:binary])
+:ok
   end
 
   def run(scheme \\ "v1.0") do
@@ -90,6 +91,7 @@ defmodule Scrapper do
 
   def read_file(path) do
     IO.puts("==> Extracting #{path}")
+
     with {:ok, markdown} <-
            File.read(path),
          {:ok, ast, _} <- EarmarkParser.as_ast(markdown) do
