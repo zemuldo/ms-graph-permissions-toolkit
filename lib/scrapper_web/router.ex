@@ -20,10 +20,9 @@ defmodule ScrapperWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ScrapperWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", ScrapperWeb.Api do
+    get "/permissions/search", PermissionsController, :search
+  end
 
   # Enables LiveDashboard only for development
   #

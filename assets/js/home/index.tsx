@@ -1,91 +1,164 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import CssBaseline from "@mui/material/CssBaseline";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "./components/AppBar";
-import { FormControl, Input, InputAdornment } from "@mui/material";
+import {
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  Input,
+  InputAdornment,
+} from "@mui/material";
 import Search from "@mui/icons-material/Search";
 import Footer from "./components/Footer";
+import axios from "axios";
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+interface Permission {
+  doc: string;
+  endpoint: string;
+  permission_type: string;
+  privilege_weight: string;
+}
+interface SelectedPermissionTypes {
+  delegatedWS: boolean;
+  delegatedMSA: boolean;
+  application: boolean;
+}
 
 const theme = createTheme();
 
 export default function Album() {
+  const [data, setData] = React.useState([]);
+  const [search, setSearch] = React.useState('');
+  const [selectedTypes, setSelectedTypes] = React.useState(
+    {} as SelectedPermissionTypes
+  );
+
+  const fetchData = (_search, _selectedTypes) => {
+    if (!_search) return
+      const types: Array<string> = [];
+    if (_selectedTypes.delegatedWS) {
+      types.push("Delegated (work or school account)");
+    }
+    if (_selectedTypes.delegatedMSA) {
+      types.push("Delegated (personal Microsoft account)");
+    }
+    if (_selectedTypes.application) {
+      types.push("Application");
+    }
+    axios
+      .get(`/api/permissions/search?query=${_search}&types=${types}`)
+      .then(({ data }) => setData(data))
+      .catch((_) => _);
+  };
+
+  const keyPress = (e) => {
+    if (e.keyCode == 13) {
+      fetchData(e.target.value, selectedTypes);
+    }
+  };
+
+  const onSelectDelegatedWS = (e) => {
+    setSelectedTypes({ ...selectedTypes, delegatedWS: e.target.checked });
+    fetchData(search, { ...selectedTypes, delegatedWS: e.target.checked });
+  };
+  const onSelectDelegatedMSA = (e) => {
+    setSelectedTypes({ ...selectedTypes, delegatedMSA: e.target.checked });
+    fetchData(search, { ...selectedTypes, delegatedMSA: e.target.checked });
+  };
+  const onSelectApplication = (e) => {
+    setSelectedTypes({ ...selectedTypes, application: e.target.checked });
+    fetchData(search, { ...selectedTypes, application: e.target.checked });
+  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Header />
-      <main>
-        <Box
-          sx={{
-            bgcolor: "background.paper",
-            pt: 8,
-            pb: 6,
-          }}
-        >
-          <Container maxWidth="md">
-            <FormControl fullWidth variant="standard">
-              <Input
-                type="search"
-                id="input-with-icon-adornment"
-                startAdornment={
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-          </Container>
-        </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
-          <Grid container spacing={4}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    sx={{
-                      // 16:9
-                      pt: "56.25%",
-                    }}
-                    image="https://source.unsplash.com/random"
-                    alt="random"
+      <main style={{ marginTop: "2vh" }}>
+        <Container maxWidth="md">
+          <Input
+            fullWidth
+            defaultValue="User.ReadWrite.All"
+            onKeyDown={keyPress}
+            onChange={(e) => setSearch(e.target.value)}
+            type="search"
+            id="input-with-icon-adornment"
+            startAdornment={
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            }
+          />
+          <div style={{ display: "flex", marginTop: 3 }}>
+            <div style={{ flex: 2, textAlign: "left" }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={onSelectDelegatedWS}
+                    checked={!!selectedTypes["delegatedWS"]}
                   />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Heading
-                    </Typography>
-                    <Typography>
-                      This is a media card. You can use this section to describe
-                      the content.
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
-                  </CardActions>
-                </Card>
-              </Grid>
+                }
+                label="Delegated (work or school)"
+              />
+            </div>
+            <div style={{ flex: 2, textAlign: "center" }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={onSelectDelegatedMSA}
+                    checked={!!selectedTypes["delegatedMSA"]}
+                  />
+                }
+                label="Delegated (Personal Microsoft)"
+              />
+            </div>
+            <div style={{ flex: 1, textAlign: "right" }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    onChange={onSelectApplication}
+                    checked={!!selectedTypes["application"]}
+                  />
+                }
+                label="Application"
+              />
+            </div>
+          </div>
+          <div style={{ marginTop: 10, minHeight: "75vh" }}>
+            {data.map((p: Permission) => (
+              <div
+                key={`${p.doc}-${p.endpoint}-${p.permission_type}-${p.privilege_weight}`}
+                style={{ marginTop: 2 }}
+              >
+                <div>
+                  <span style={{ fontSize: "24px" }}>{p.endpoint}</span>
+                  <br />
+                  <span>{p.doc}</span>
+                  <br />
+                  <span style={{ display: "flex" }}>
+                    <span style={{ flex: 4 }}>
+                      Permission Type:{" "}
+                      <Button size="small">{p.permission_type}</Button>
+                    </span>
+                    <span style={{ flex: 1, textAlign: "right" }}>
+                      Privilege:{" "}
+                      <Button size="small">{p.privilege_weight}</Button>
+                    </span>
+                  </span>
+                </div>
+                <hr/>
+              </div>
             ))}
-          </Grid>
+          </div>
         </Container>
       </main>
-      <Footer />
+      <footer>
+        <Footer />
+      </footer>
     </ThemeProvider>
   );
 }

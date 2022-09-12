@@ -55,8 +55,7 @@ defmodule Scrapper do
       try do
         Repo.create_for_doc(item)
       rescue
-        e ->
-          IO.inspect(e)
+        _ ->
           IO.inspect(item)
           raise("Failed to dump")
       end

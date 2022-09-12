@@ -5,7 +5,7 @@ import { Link, Typography } from '@mui/material';
 const Footer = () => (
   <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
     <Typography variant="h6" align="center" gutterBottom>
-      Build with love of Microsoft Hack
+      Build for love of Microsoft Hack
     </Typography>
     <Typography
       variant="subtitle1"
