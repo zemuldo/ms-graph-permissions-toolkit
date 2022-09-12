@@ -1,4 +1,4 @@
-defmodule Tracktor.TextExtractor do
+defmodule Scrapper.ExTractor.TextExTractor do
   def extract_text([text]) when is_binary(text), do: text
   def extract_text(text) when is_binary(text), do: text
   def extract_text({"td", _style, [text], %{}}) when is_binary(text), do: text

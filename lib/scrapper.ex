@@ -1,8 +1,7 @@
-defmodule Tractor do
-  alias Tractor.DistortedTable
-  alias Tracktor.PermissionName
-  alias Tracktor.DetectTable
-  alias Tracktor.TextExtractor
+defmodule Scrapper do
+  alias Scrapper.ExTractor.DistortedTable
+  alias Scrapper.ExTractor.DetectTable
+  alias Scrapper.ExTractor.Permissions
 
   def list_permissions(scheme \\ "v1.0") do
     scheme
@@ -39,7 +38,7 @@ defmodule Tractor do
       try do
         Poison.encode!(item)
       rescue
-        e ->
+        _ ->
           IO.inspect(item)
           raise("Some itemns not well encoded")
       end
@@ -49,7 +48,7 @@ defmodule Tractor do
   end
 
   def run(scheme \\ "v1.0") do
-    {:ok, apis} = File.ls("../docs/microsoft-graph-docs-main/api-reference/#{scheme}/api")
+    {:ok, apis} = File.ls("docs/microsoft-graph-docs-main/api-reference/#{scheme}/api")
 
     apis
     |> Flow.from_enumerable()
@@ -64,12 +63,12 @@ defmodule Tractor do
   end
 
   def get_endpoint("v1.0", endpoint) do
-    ("../docs/microsoft-graph-docs-main/api-reference/v1.0/api/" <> endpoint)
+    ("docs/microsoft-graph-docs-main/api-reference/v1.0/api/" <> endpoint)
     |> read_file
   end
 
   def get_endpoint("beta", endpoint) do
-    ("../docs/microsoft-graph-docs-main/api-reference/beta/api/" <> endpoint)
+    ("docs/microsoft-graph-docs-main/api-reference/beta/api/" <> endpoint)
     |> read_file
   end
 
@@ -91,7 +90,7 @@ defmodule Tractor do
                |> get_tbodies()
                |> Enum.at(0)
                |> get_trs()
-               |> Enum.map(&get_permissions(path, &1)) do
+               |> Enum.map(&Permissions.get_permissions(path, &1)) do
             [[%{} | _] | _] = perms ->
               {:halt, perms |> List.flatten()}
 
@@ -168,95 +167,4 @@ defmodule Tractor do
   def get_trs(_) do
     []
   end
-
-  def get_permissions(
-        resource,
-        {"tr", [],
-         [
-           {"td", _style1, permission_type, %{}},
-           {"td", _style2, permissions, _}
-         ], _}
-      ) do
-    %{
-      resource: resource |> TextExtractor.extract_text(),
-      permission_type: permission_type |> TextExtractor.extract_text(),
-      permissions:
-        permissions
-        |> Enum.map(&TextExtractor.extract_text/1)
-        |> Enum.join("")
-        |> String.split(",", trim: true)
-    }
-  end
-
-  def get_permissions(
-        resource,
-        {"tr", [],
-         [
-           {"td", _style1, permission_type, %{}},
-           {"td", _style2, permissions_on_self, _},
-           {"td", _style2, permissions_on_others, _}
-         ], _}
-      ) do
-    [
-      %{
-        permission_type: TextExtractor.extract_text(permission_type),
-        permissions_on_self:
-          permissions_on_self
-          |> Enum.map(&TextExtractor.extract_text/1)
-          |> Enum.join("")
-          |> String.split(",", trim: true)
-      },
-      %{
-        permission_type: TextExtractor.extract_text(permission_type),
-        permissions_on_others:
-          permissions_on_others
-          |> Enum.map(&TextExtractor.extract_text/1)
-          |> Enum.join("")
-          |> String.split(",", trim: true)
-      }
-    ]
-  end
-
-  def get_permissions(
-        _,
-        {"tr", [],
-         [
-           {"td", _, resource, _},
-           {"td", _, delegated_ws, _},
-           {"td", _, delegated_msa, _},
-           {"td", _, application, _}
-         ], _}
-      ) do
-    [
-      %{
-        resource: TextExtractor.extract_text(resource),
-        permission_type: "Delegated (work or school account)",
-        permissions:
-          delegated_ws
-          |> Enum.map(&TextExtractor.extract_text/1)
-          |> Enum.join("")
-          |> String.split(",", trim: true)
-      },
-      %{
-        resource: TextExtractor.extract_text(resource),
-        permission_type: "Delegated (personal Microsoft account)",
-        permissions:
-          delegated_msa
-          |> Enum.map(&TextExtractor.extract_text/1)
-          |> Enum.join("")
-          |> String.split(",", trim: true)
-      },
-      %{
-        resource: TextExtractor.extract_text(resource),
-        permission_type: "Application",
-        permissions:
-          application
-          |> Enum.map(&TextExtractor.extract_text/1)
-          |> Enum.join("")
-          |> String.split(",", trim: true)
-      }
-    ]
-  end
-
-  def get_permissions(_, _), do: []
 end

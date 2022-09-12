@@ -1,9 +1,9 @@
-defmodule Tractor.MixProject do
+defmodule Scrapper.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :tractor,
+      app: :Scrapper,
       version: "0.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
@@ -14,7 +14,8 @@ defmodule Tractor.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Scrapper.Application, []}
     ]
   end
 
@@ -25,7 +26,9 @@ defmodule Tractor.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:earmark, "~> 1.4"},
       {:flow, "~> 1.2"},
-      {:poison, "~> 5.0"}
+      {:poison, "~> 5.0"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 end

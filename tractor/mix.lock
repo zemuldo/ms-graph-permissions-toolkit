@@ -1,7 +1,0 @@
-%{
-  "earmark": {:hex, :earmark, "1.4.27", "b413b0379043df51475a9b22ce344e8a58a117516c735b8871e6cdd5ed0f0153", [:mix], [{:earmark_parser, "~> 1.4.26", [hex: :earmark_parser, repo: "hexpm", optional: false]}], "hexpm", "579ebe2eaf4c7e040815a73a268036bcd96e6aab8ad2b1fcd979aaeb1ea47e15"},
-  "earmark_parser": {:hex, :earmark_parser, "1.4.26", "f4291134583f373c7d8755566122908eb9662df4c4b63caa66a0eabe06569b0a", [:mix], [], "hexpm", "48d460899f8a0c52c5470676611c01f64f3337bad0b26ddab43648428d94aabc"},
-  "flow": {:hex, :flow, "1.2.0", "515e03aa3d056cecc3e3f1e80f6ca4bbf5f45b13c88dee5db880b2f3f24f1caa", [:mix], [{:gen_stage, "~> 1.0", [hex: :gen_stage, repo: "hexpm", optional: false]}], "hexpm", "1b45bfc8a9202c5ec80b077c21df133561e56c56189ba4082dddccb6b5762525"},
-  "gen_stage": {:hex, :gen_stage, "1.1.2", "b1656cd4ba431ed02c5656fe10cb5423820847113a07218da68eae5d6a260c23", [:mix], [], "hexpm", "9e39af23140f704e2b07a3e29d8f05fd21c2aaf4088ff43cb82be4b9e3148d02"},
-  "poison": {:hex, :poison, "5.0.0", "d2b54589ab4157bbb82ec2050757779bfed724463a544b6e20d79855a9e43b24", [:mix], [{:decimal, "~> 2.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm", "11dc6117c501b80c62a7594f941d043982a1bd05a1184280c0d9166eb4d8d3fc"},
-}

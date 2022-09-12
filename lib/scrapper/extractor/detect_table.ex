@@ -1,5 +1,5 @@
-defmodule Tracktor.DetectTable do
-  alias Tracktor.PermissionName
+defmodule Scrapper.ExTractor.DetectTable do
+  alias Scrapper.ExTractor.PermissionName
 
   def is_permissions_table([
         {"thead", [],
