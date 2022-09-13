@@ -58,8 +58,8 @@ Now proceede to setup as detailed below.
 ## Deployment
 
 - az login
-- az acr login -n registry
-- docker build . -t registry.azurecr.io/app
-- docker push registry.azurecr.io/app
+- az acr login -n msgraphpermissiontoolkitacr
+- docker build . -t msgraphpermissiontoolkitacr.azurecr.io/app
+- docker push msgraphpermissiontoolkitacr.azurecr.io/app
 
 Azure App service will take care of things from here.
