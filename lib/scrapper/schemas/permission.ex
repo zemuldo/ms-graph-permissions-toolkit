@@ -9,6 +9,7 @@ defmodule Scrapper.Schemas.Permission do
 
   @fields [
     :doc,
+    :scheme,
     :endpoint,
     :resource,
     :permission_type,
@@ -20,6 +21,7 @@ defmodule Scrapper.Schemas.Permission do
 
   schema "permissions" do
     field(:doc, :string)
+    field(:scheme, :string)
     field(:endpoint, :string)
     field(:resource, :string)
     field(:permission_type, :string)
@@ -42,27 +44,7 @@ defmodule Scrapper.Schemas.Permission do
       p.scope_on_all == ^permission or p.scope_on_self == ^permission or
         p.scope_on_others == ^permission
     )
-    |> select([p], map(p, @fields))
-    |> Repo.all()
-  end
-
-  def get_endpoints(permission, permission_type) when is_binary(permission_type) do
-    from(p in Permission)
-    |> where(
-      [p],
-      (p.scope_on_all == ^permission or p.scope_on_self == ^permission or
-         p.scope_on_others == ^permission) and p.permission_type == ^permission_type
-    )
-    |> select([p], map(p, @fields))
-    |> Repo.all()
-  end
-  def get_endpoints(permission, permission_types) do
-    from(p in Permission)
-    |> where(
-      [p],
-      (p.scope_on_all == ^permission or p.scope_on_self == ^permission or
-         p.scope_on_others == ^permission) and p.permission_type in ^permission_types
-    )
+    |> order_by([p], [asc: p.privilege_weight, desc: p.doc])
     |> select([p], map(p, @fields))
     |> Repo.all()
   end
@@ -72,9 +54,10 @@ defmodule Scrapper.Schemas.Permission do
     |> where(
       [p],
       (p.scope_on_all == ^permission or p.scope_on_self == ^permission or
-         p.scope_on_others == ^permission) and p.permission_type == ^permission_type and
+         p.scope_on_others == ^permission) and p.permission_type in ^permission_type and
         like(p.endpoint, ^"%#{String.replace(endpoint_text, "%", "\\%")}%")
     )
+    |> order_by([p], [asc: p.privilege_weight, desc: p.doc])
     |> select([p], map(p, @fields))
     |> Repo.all()
   end

@@ -55,12 +55,14 @@ defmodule Scrapper do
       try do
         Repo.create_for_doc(item)
       rescue
-        _ ->
+        e ->
+          IO.inspect(e)
           IO.inspect(item)
           raise("Failed to dump")
       end
     end)
-:ok
+
+    :ok
   end
 
   def run(scheme \\ "v1.0") do
@@ -80,15 +82,15 @@ defmodule Scrapper do
 
   def get_endpoint("v1.0", endpoint) do
     ("docs/microsoft-graph-docs-main/api-reference/v1.0/api/" <> endpoint)
-    |> read_file
+    |> read_file("v1.0")
   end
 
   def get_endpoint("beta", endpoint) do
     ("docs/microsoft-graph-docs-main/api-reference/beta/api/" <> endpoint)
-    |> read_file
+    |> read_file("beta")
   end
 
-  def read_file(path) do
+  def read_file(path, scheme) do
     IO.puts("==> Extracting #{path}")
 
     with {:ok, markdown} <-
@@ -129,6 +131,7 @@ defmodule Scrapper do
                {"code", [{"class", "http"}], [endpoints], _}
              ], _} ->
               {:halt, endpoints |> String.split("\n", trim: true)}
+
             {"pre", [],
              [
                {"code", [{"class", "msgraph-interactive"}], [endpoints], _}
@@ -153,7 +156,8 @@ defmodule Scrapper do
       %{
         permissions: DistortedTable.extract_from_paragraph(permissions, ast),
         endpoints: endpoints,
-        doc: path
+        doc: path,
+        scheme: scheme
       }
       |> Cleaner.clean_endpoint()
     else

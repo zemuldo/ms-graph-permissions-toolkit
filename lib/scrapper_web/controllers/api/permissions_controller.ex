@@ -3,20 +3,18 @@ defmodule ScrapperWeb.Api.PermissionsController do
 
   alias Scrapper.Schemas.Permission
 
-  def search(conn, %{"query" => query, "types" => types} = params) do
+  def search(conn, %{"query" => query, "types" => types}) do
     permission =
-      query |> String.split(" ") |> Enum.find(fn item -> String.contains?(item, ".") end)
+      query
+      |> String.split(" ")
+      |> Enum.find(fn item -> String.contains?(item, ".") end)
 
-    data = Permission.get_endpoints(permission, get_types(types))
+    endpoint_hint =
+      query
+      |> String.split(" ")
+      |> Enum.find(fn item -> not String.contains?(item, ".") end)
 
-    conn |> json(data)
-  end
-
-  def search(conn, %{"query" => query} = params) do
-    permission =
-      query |> String.split(" ") |> Enum.find(fn item -> String.contains?(item, ".") end)
-
-    data = Permission.get_endpoints(permission)
+    data = Permission.get_endpoints(permission, get_types(types), endpoint_hint || "")
 
     conn |> json(data)
   end
@@ -30,6 +28,7 @@ defmodule ScrapperWeb.Api.PermissionsController do
       "Application"
     ]
   end
+
   defp get_types(types) do
     types |> String.split(",")
   end

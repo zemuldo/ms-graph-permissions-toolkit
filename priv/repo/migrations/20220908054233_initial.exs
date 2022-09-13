@@ -5,6 +5,7 @@ defmodule Scrapper.Repo.Migrations.Initial do
 
     create table("permissions") do
       add :doc, :text
+      add :scheme, :text
       add :endpoint, :text
       add :resource, :text
       add :permission_type, :text

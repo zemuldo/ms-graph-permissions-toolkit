@@ -16,9 +16,11 @@ import {
 import Search from "@mui/icons-material/Search";
 import Footer from "./components/Footer";
 import axios from "axios";
+import Endpoint from "./components/Endpoint";
 
 interface Permission {
   doc: string;
+  scheme: string;
   endpoint: string;
   permission_type: string;
   privilege_weight: string;
@@ -33,7 +35,7 @@ const theme = createTheme();
 
 export default function Album() {
   const [data, setData] = React.useState([]);
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = React.useState("User.ReadWrite.All");
   const [selectedTypes, setSelectedTypes] = React.useState(
     {} as SelectedPermissionTypes
   );
@@ -81,8 +83,8 @@ export default function Album() {
       <main style={{ marginTop: "2vh" }}>
         <Container maxWidth="md">
           <Input
+            value={search}
             fullWidth
-            defaultValue="User.ReadWrite.All"
             onKeyDown={keyPress}
             onChange={(e) => setSearch(e.target.value)}
             type="search"
@@ -135,9 +137,11 @@ export default function Album() {
                 style={{ marginTop: 2 }}
               >
                 <div>
-                  <span style={{ fontSize: "24px" }}>{p.endpoint}</span>
+                  <Endpoint endpoint={p.endpoint} doc={p.doc} scheme={p.scheme} />
                   <br />
                   <span>{p.doc}</span>
+                  <br />
+                  <span>{p.resource}</span>
                   <br />
                   <span style={{ display: "flex" }}>
                     <span style={{ flex: 4 }}>
@@ -150,7 +154,7 @@ export default function Album() {
                     </span>
                   </span>
                 </div>
-                <hr/>
+                <hr />
               </div>
             ))}
           </div>
