@@ -1,15 +1,12 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "./components/AppBar";
 import {
   Checkbox,
-  FormControl,
   FormControlLabel,
-  FormGroup,
   Input,
   InputAdornment,
 } from "@mui/material";
@@ -22,6 +19,7 @@ interface Permission {
   doc: string;
   scheme: string;
   endpoint: string;
+  resource: string;
   permission_type: string;
   privilege_weight: string;
 }
@@ -137,11 +135,11 @@ export default function Album() {
                 style={{ marginTop: 2 }}
               >
                 <div>
-                  <Endpoint endpoint={p.endpoint} doc={p.doc} scheme={p.scheme} />
-                  <br />
-                  <span>{p.doc}</span>
-                  <br />
-                  <span>{p.resource}</span>
+                  <Endpoint
+                    endpoint={p.endpoint}
+                    doc={p.doc}
+                    scheme={p.scheme}
+                  />
                   <br />
                   <span style={{ display: "flex" }}>
                     <span style={{ flex: 4 }}>
