@@ -53,4 +53,13 @@ Now proceede to setup as detailed below.
   Scrapper.get_endpoint("v1.0", "user-list.md") # Get for a doc in v1.0
   Scrapper.get_endpoint("beta", "user-list.md") # Get for a doc in beta
   Scrapper.run("v.10") |> Scrapper.run |> Scrapper.to_json # Dump to json file
-  Scrapper.run("v.10") |> Scrapper.run |> Scrapper.to_json # Dump to postgres
+  Scrapper.run("v.10") |> Scrapper.run |> Scrapper.to_db # Dump to postgres
+
+## Deployment
+
+- az login
+- az acr login -n registry
+- docker build . -t registry.azurecr.io/app
+- docker push registry.azurecr.io/app
+
+Azure App service will take care of things from here.

@@ -12,7 +12,8 @@ defmodule Scrapper.Application do
         # Start the PubSub system
         {Phoenix.PubSub, name: Scrapper.PubSub},
         # Start the Endpoint (http/https)
-        ScrapperWeb.Endpoint
+        ScrapperWeb.Endpoint,
+        Scrapper.Scheduler
       ],
       opts
     )

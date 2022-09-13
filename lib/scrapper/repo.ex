@@ -6,12 +6,14 @@ defmodule Scrapper.Repo do
   def init(_type, config) do
     {:ok,
      config
-     |> Keyword.put(:hostname, System.get_env("PG_DB_HOST", "10.10.10.4"))
+     |> Keyword.put(:hostname, System.get_env("PG_DB_HOST", "localhost"))
      |> Keyword.put(:username, System.get_env("PG_DB_USER", "postgres"))
      |> Keyword.put(:database, System.get_env("PG_DB_NAME", "ms-graph-permissions-tk-dev"))
      |> Keyword.put(:port, System.get_env("PG_DB_PORT", "5432"))
      |> Keyword.put(:password, System.get_env("PG_DB_PASSWORD", "postgres"))
      |> Keyword.put(:url, System.get_env("PG_DB_URL"))
+     |> Keyword.put(:ssl, true)
+     |> Keyword.put(:timeout, 15_000)
      |> Keyword.put(
        :pool_size,
        System.get_env("PG_DB_POOL_SIZE", "2") |> String.to_integer()

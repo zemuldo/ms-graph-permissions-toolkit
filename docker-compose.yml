@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+
+  app:
+    image: msgraphpermissiontoolkitacr.azurecr.io/app
+    environment:
+      PHX_SERVER: start
+    ports:
+      - "80:4000"
+    restart: always

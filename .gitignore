@@ -163,3 +163,6 @@ Scrapper-*.tar
 dump.json
 
 *.env*
+
+priv/static/assets/*
+ssh/*

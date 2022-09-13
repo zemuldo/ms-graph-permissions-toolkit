@@ -5,16 +5,6 @@ defmodule Scrapper do
   alias Scrapper.Cleaner
   alias Scrapper.Repo
 
-  def list_permissions(scheme \\ "v1.0") do
-    scheme
-    |> run()
-    |> Enum.reduce([], fn item, acc ->
-      acc ++ Enum.reduce(item.permissions, [], fn {_, _, perms}, acc -> acc ++ perms end)
-    end)
-    |> Enum.map(&format_permission/1)
-    |> Enum.uniq()
-  end
-
   def format_permission(
         {"em", [],
          [
