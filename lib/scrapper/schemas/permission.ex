@@ -49,12 +49,12 @@ defmodule Scrapper.Schemas.Permission do
     |> Repo.all()
   end
 
-  def get_endpoints(permission, permission_type, endpoint_text) do
+  def get_endpoints(permission, permission_types, endpoint_text) do
     from(p in Permission)
     |> where(
       [p],
       (p.scope_on_all == ^permission or p.scope_on_self == ^permission or
-         p.scope_on_others == ^permission) and p.permission_type in ^permission_type and
+         p.scope_on_others == ^permission) and p.permission_type in ^permission_types and
         like(p.endpoint, ^"%#{String.replace(endpoint_text, "%", "\\%")}%")
     )
     |> order_by([p], [asc: p.privilege_weight, desc: p.doc])

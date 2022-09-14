@@ -41,7 +41,8 @@ defmodule Scrapper do
 
   def to_db(data) do
     data
-    |> Enum.map(fn item ->
+    |> Flow.from_enumerable()
+    |> Flow.map(fn item ->
       try do
         Repo.create_for_doc(item)
       rescue
@@ -51,6 +52,7 @@ defmodule Scrapper do
           raise("Failed to dump")
       end
     end)
+    |> Enum.to_list()
 
     :ok
   end
@@ -151,7 +153,8 @@ defmodule Scrapper do
       }
       |> Cleaner.clean_endpoint()
     else
-      _ ->
+      e ->
+        IO.inspect(e)
         {:error, "Failed to read file"}
     end
   end
